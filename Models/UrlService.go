@@ -1,40 +1,52 @@
 package Models
 
 import (
-	"../Config"
-	"fmt"
 	_ "github.com/go-sql-driver/mysql"
+	"net/http"
 )
 
-func GetAllUrl(b *[]UrlMaster) (err error) {
-	if err = Config.DB.Find(b).Error; err != nil {
-		return err
+//var repo = NewUrlRepository()
+
+type urlService struct {
+	urls []UrlMaster
+}
+
+func New() urlService {
+	return urlService{urls: []UrlMaster{}}
+}
+
+func (*urlService) GetAllUrl() ([]UrlMaster, error) {
+	return NewUrlRepository().FindAll()
+}
+
+func (*urlService) AddNewUrl(u *UrlMaster) error {
+	return NewUrlRepository().Save(u)
+}
+
+func (*urlService) GetUrl(u *UrlMaster, id string) (err error) {
+	if err = NewUrlRepository().Get(u, id); err == nil {
+		checkUrl(u)
 	}
-	return nil
+	return err
 }
 
-func AddNewUrl(b *UrlMaster) (err error) {
-	b.Status = "active"
-	if err = Config.DB.Create(b).Error; err != nil {
-		return err
+func (*urlService) UpdateUrl(u *UrlMaster) error {
+	return NewUrlRepository().Update(u)
+}
+
+func (*urlService) DeleteUrl(u *UrlMaster, id string) error {
+	return NewUrlRepository().Delete(u, id)
+}
+
+func checkUrl(u *UrlMaster){
+	res, err := http.Get(u.Url)
+	if err == nil && res != nil && res.StatusCode == 200 {
+		return
+	} else {
+		u.FailureCount += 1
+		if u.FailureCount >= u.FailureThreshold {
+			u.Status = "inactive"
+		}
+		NewUrlRepository().Update(u)
 	}
-	return nil
-}
-
-func GetUrl(b *UrlMaster, id string) (err error) {
-	if err := Config.DB.Where("id = ?", id).First(b).Error; err != nil {
-		return err
-	}
-	return nil
-}
-
-func UpdateUrl(b *UrlMaster, id string) (err error) {
-	fmt.Println(b)
-	Config.DB.Save(b)
-	return nil
-}
-
-func DeleteUrl(b *UrlMaster, id string) (err error) {
-	Config.DB.Where("id = ?", id).Delete(b)
-	return nil
 }

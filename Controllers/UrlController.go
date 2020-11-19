@@ -6,9 +6,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+var service = Models.New()
+
 func ListUrl(c *gin.Context) {
-	var urlMaster []Models.UrlMaster
-	err := Models.GetAllUrl(&urlMaster)
+	urlMaster, err := service.GetAllUrl()
 	if err != nil {
 		ApiHelpers.RespondJSON(c, 404, err)
 	} else {
@@ -19,7 +20,7 @@ func ListUrl(c *gin.Context) {
 func AddNewUrl(c *gin.Context) {
 	var urlMaster Models.UrlMaster
 	c.BindJSON(&urlMaster)
-	err := Models.AddNewUrl(&urlMaster)
+	err := service.AddNewUrl(&urlMaster)
 	if err != nil {
 		ApiHelpers.RespondJSON(c, 404, err)
 	} else {
@@ -31,7 +32,7 @@ func AddNewUrl(c *gin.Context) {
 func GetUrl(c *gin.Context) {
 	id := c.Params.ByName("id")
 	var urlMaster Models.UrlMaster
-	err := Models.GetUrl(&urlMaster, id)
+	err := service.GetUrl(&urlMaster, id)
 	if err != nil {
 		ApiHelpers.RespondJSON(c, 404, err)
 	} else {
@@ -42,12 +43,12 @@ func GetUrl(c *gin.Context) {
 func UpdateUrl(c *gin.Context) {
 	var urlMaster Models.UrlMaster
 	id := c.Params.ByName("id")
-	err := Models.GetUrl(&urlMaster, id)
+	err := service.GetUrl(&urlMaster, id)
 	if err != nil {
 		ApiHelpers.RespondJSON(c, 404, err)
 	}
 	c.BindJSON(&urlMaster)
-	err = Models.UpdateUrl(&urlMaster, id)
+	err = service.UpdateUrl(&urlMaster)
 	if err != nil {
 		ApiHelpers.RespondJSON(c, 404, err)
 	} else {
@@ -58,7 +59,7 @@ func UpdateUrl(c *gin.Context) {
 func DeleteUrl(c *gin.Context) {
 	var urlMaster Models.UrlMaster
 	id := c.Params.ByName("id")
-	err := Models.DeleteUrl(&urlMaster, id)
+	err := service.DeleteUrl(&urlMaster, id)
 	if err != nil {
 		ApiHelpers.RespondJSON(c, 404, err)
 	} else {
