@@ -5,11 +5,16 @@ import (
 	"../Models"
 	"github.com/gin-gonic/gin"
 )
+type UrlController struct {
+	urlService Models.UrlService
+}
 
-var service = Models.New()
+func New() UrlController {
+	return UrlController{urlService: Models.New()}
+}
 
-func ListUrl(c *gin.Context) {
-	urlMaster, err := service.GetAllUrl()
+func (u *UrlController) ListUrl(c *gin.Context) {
+	urlMaster, err := u.urlService.GetAllUrl()
 	if err != nil {
 		ApiHelpers.RespondJSON(c, 404, err)
 	} else {
@@ -17,10 +22,10 @@ func ListUrl(c *gin.Context) {
 	}
 }
 
-func AddNewUrl(c *gin.Context) {
+func (u *UrlController) AddNewUrl(c *gin.Context) {
 	var urlMaster Models.UrlMaster
 	c.BindJSON(&urlMaster)
-	err := service.AddNewUrl(&urlMaster)
+	err := u.urlService.AddNewUrl(&urlMaster)
 	if err != nil {
 		ApiHelpers.RespondJSON(c, 404, err)
 	} else {
@@ -29,10 +34,10 @@ func AddNewUrl(c *gin.Context) {
 
 }
 
-func GetUrl(c *gin.Context) {
+func (u *UrlController) GetUrl(c *gin.Context) {
 	id := c.Params.ByName("id")
 	var urlMaster Models.UrlMaster
-	err := service.GetUrl(&urlMaster, id)
+	err := u.urlService.GetUrl(&urlMaster, id)
 	if err != nil {
 		ApiHelpers.RespondJSON(c, 404, err)
 	} else {
@@ -40,15 +45,15 @@ func GetUrl(c *gin.Context) {
 	}
 }
 
-func UpdateUrl(c *gin.Context) {
+func (u *UrlController) UpdateUrl(c *gin.Context) {
 	var urlMaster Models.UrlMaster
 	id := c.Params.ByName("id")
-	err := service.GetUrl(&urlMaster, id)
+	err := u.urlService.GetUrl(&urlMaster, id)
 	if err != nil {
 		ApiHelpers.RespondJSON(c, 404, err)
 	}
 	c.BindJSON(&urlMaster)
-	err = service.UpdateUrl(&urlMaster)
+	err = u.urlService.UpdateUrl(&urlMaster, id)
 	if err != nil {
 		ApiHelpers.RespondJSON(c, 404, err)
 	} else {
@@ -56,10 +61,10 @@ func UpdateUrl(c *gin.Context) {
 	}
 }
 
-func DeleteUrl(c *gin.Context) {
+func (u *UrlController) DeleteUrl(c *gin.Context) {
 	var urlMaster Models.UrlMaster
 	id := c.Params.ByName("id")
-	err := service.DeleteUrl(&urlMaster, id)
+	err := u.urlService.DeleteUrl(&urlMaster, id)
 	if err != nil {
 		ApiHelpers.RespondJSON(c, 404, err)
 	} else {

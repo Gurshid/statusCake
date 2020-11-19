@@ -1,44 +1,45 @@
 package Models
 
 import (
-	_ "github.com/go-sql-driver/mysql"
+	"fmt"
 	"net/http"
 )
 
-//var repo = NewUrlRepository()
-
-type urlService struct {
+type UrlService struct {
 	urls []UrlMaster
+	repo UrlRepository
 }
 
-func New() urlService {
-	return urlService{urls: []UrlMaster{}}
+func New() UrlService {
+	return UrlService{urls: []UrlMaster{}, repo: NewUrlRepository()}
 }
 
-func (*urlService) GetAllUrl() ([]UrlMaster, error) {
-	return NewUrlRepository().FindAll()
+func (us *UrlService) GetAllUrl() ([]UrlMaster, error) {
+	return us.repo.FindAll()
 }
 
-func (*urlService) AddNewUrl(u *UrlMaster) error {
-	return NewUrlRepository().Save(u)
+func (us *UrlService) AddNewUrl(u *UrlMaster) error {
+	return us.repo.Save(u)
 }
 
-func (*urlService) GetUrl(u *UrlMaster, id string) (err error) {
-	if err = NewUrlRepository().Get(u, id); err == nil {
-		checkUrl(u)
+func (us *UrlService) GetUrl(u *UrlMaster, id string) (err error) {
+	if err = us.repo.Get(u, id); err == nil && u.Status == "active" {
+		us.checkUrl(u, id)
+	} else {
+		fmt.Println("status: " + u.Status + " error: %v", err)
 	}
 	return err
 }
 
-func (*urlService) UpdateUrl(u *UrlMaster) error {
-	return NewUrlRepository().Update(u)
+func (us *UrlService) UpdateUrl(u *UrlMaster, id string) error {
+	return us.repo.Update(u, id)
 }
 
-func (*urlService) DeleteUrl(u *UrlMaster, id string) error {
-	return NewUrlRepository().Delete(u, id)
+func (us *UrlService) DeleteUrl(u *UrlMaster, id string) error {
+	return us.repo.Delete(u, id)
 }
 
-func checkUrl(u *UrlMaster){
+func (us *UrlService) checkUrl(u *UrlMaster, id string){
 	res, err := http.Get(u.Url)
 	if err == nil && res != nil && res.StatusCode == 200 {
 		return
@@ -47,6 +48,6 @@ func checkUrl(u *UrlMaster){
 		if u.FailureCount >= u.FailureThreshold {
 			u.Status = "inactive"
 		}
-		NewUrlRepository().Update(u)
+		us.repo.Update(u, id)
 	}
 }

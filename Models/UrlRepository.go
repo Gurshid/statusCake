@@ -8,7 +8,7 @@ import (
 type UrlRepository interface {
 	Get(url *UrlMaster, id string) error
 	Save(url *UrlMaster) error
-	Update(url *UrlMaster) error
+	Update(url *UrlMaster, id string) error
 	Delete(url *UrlMaster, id string) error
 	FindAll() ([]UrlMaster, error)
 }
@@ -24,7 +24,7 @@ func NewUrlRepository() UrlRepository {
 		fmt.Println("status: ", err)
 	}
 	//defer Config.DB.Close()
-	db.AutoMigrate(&UrlMaster{})
+	//db.AutoMigrate(&UrlMaster{})
 	return &database{
 		connection: db,
 	}
@@ -45,7 +45,7 @@ func (d database) Save(u *UrlMaster) error {
 	return nil
 }
 
-func (d database) Update(u *UrlMaster) error {
+func (d database) Update(u *UrlMaster, id string) error {
 	fmt.Println(u)
 	d.connection.Save(u)
 	return nil
