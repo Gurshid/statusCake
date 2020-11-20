@@ -14,7 +14,7 @@
 ```
 {
     "url": "http://httpbin.org/status/200",
-    "frequency": 0,
+    "failure_count": 0,
     "failure_threshold": 50
 }
 ```
