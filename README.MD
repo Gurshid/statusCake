@@ -2,7 +2,7 @@
 
 This is an uptime monitoring service written in golang.
 
-###Database Schema
+### Database Schema
 
 ```
 ID                              int
@@ -13,7 +13,7 @@ Status				string
 ```
 
 
-###APIs
+### APIs
 
 The following are the API supported by the service.
 
@@ -27,7 +27,7 @@ The following are the API supported by the service.
 * `PUT` : Update a url
 * `DELETE` : Delete a url
 
-###Post Params
+### Post Params
 ```
 {
     "url": "http://httpbin.org/status/200",
