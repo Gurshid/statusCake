@@ -3,6 +3,7 @@ package Models
 import (
 	"fmt"
 	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/sqlite"
 )
 
 type UrlRepository interface {
@@ -23,7 +24,7 @@ func NewUrlRepository() UrlRepository {
 	if err != nil {
 		fmt.Println("status: ", err)
 	}
-	//defer Config.DB.Close()
+	//defer db.Close()
 	//db.AutoMigrate(&UrlMaster{})
 	return &database{
 		connection: db,

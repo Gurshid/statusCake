@@ -22,13 +22,17 @@ func (us *UrlService) AddNewUrl(u *UrlMaster) error {
 	return us.repo.Save(u)
 }
 
-func (us *UrlService) GetUrl(u *UrlMaster, id string) (err error) {
-	if err = us.repo.Get(u, id); err == nil && u.Status == "active" {
+func (us *UrlService) GetAndCheckUrl(u *UrlMaster, id string) (err error) {
+	if err = us.GetUrl(u, id); err == nil && u.Status == "active" {
 		us.checkUrl(u, id)
 	} else {
 		fmt.Println("status: " + u.Status + " error: %v", err)
 	}
 	return err
+}
+
+func (us *UrlService) GetUrl(u *UrlMaster, id string) (err error) {
+	return us.repo.Get(u, id)
 }
 
 func (us *UrlService) UpdateUrl(u *UrlMaster, id string) error {

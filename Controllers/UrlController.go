@@ -37,7 +37,7 @@ func (u *UrlController) AddNewUrl(c *gin.Context) {
 func (u *UrlController) GetUrl(c *gin.Context) {
 	id := c.Params.ByName("id")
 	var urlMaster Models.UrlMaster
-	err := u.urlService.GetUrl(&urlMaster, id)
+	err := u.urlService.GetAndCheckUrl(&urlMaster, id)
 	if err != nil {
 		ApiHelpers.RespondJSON(c, 404, err)
 	} else {
